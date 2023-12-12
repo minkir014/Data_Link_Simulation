@@ -18,6 +18,7 @@
 
 #include <omnetpp.h>
 #include <vector>
+#include <string>
 
 using namespace omnetpp;
 
