@@ -17,13 +17,35 @@
 
 Define_Module(Node);
 
+std::string framingFunc(std::string message) {
+
+}
+
+std::string deframingFunc(std::string payload) {
+
+}
+
+std::string modifier(std::string payload, std::string modifierBits) {
+
+}
+
+void logEvents(std::string modifierCode, bool sentOrReceived, int seq_num, std::string payload, std::string trailer,
+            bool modified, bool lost, int duplicate, double delay, bool AckOrNack) {
+
+}
+
+void readFromFile() {
+
+}
+
 void Node::initialize()
 {
-    std::cout << par("ProcessingTime").doubleValue() << endl;
     // TODO - Generated method body
+
 }
 
 void Node::handleMessage(cMessage *msg)
 {
     // TODO - Generated method body
+
 }

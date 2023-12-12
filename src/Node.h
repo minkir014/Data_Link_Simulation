@@ -17,6 +17,7 @@
 #define __DATALINKSIMULATION_NODE_H_
 
 #include <omnetpp.h>
+#include <vector>
 
 using namespace omnetpp;
 
@@ -26,8 +27,24 @@ using namespace omnetpp;
 class Node : public cSimpleModule
 {
   protected:
+    bool duplicate;
+    bool modified;
+    bool loss;
+    bool delay;
+    int outputType; // 0: Reading, 1: Transmission of Data, 2: TimeOut, 3: ControlFrame
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
+    std::vector<std::string> inputMessages;
+    std::vector<std::string> inputModifiers;
+    virtual std::string framingFunc(std::string message);
+    virtual std::string deframingFunc(std::string payload);
+    virtual std::string modifier(std::string payload, std::string modifierBits);
+    virtual void logEvents(std::string modifierCode, bool sentOrReceived, int seq_num, std::string payload, std::string trailer,
+            bool modified, bool lost, int duplicate, double delay, bool AckOrNack); // 0: Sent, 1: Received
+                                                                   //0: ACK, 1: NACK
+
+    virtual void readFromFile();
+
 };
 
 #endif
