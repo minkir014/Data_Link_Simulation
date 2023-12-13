@@ -53,6 +53,17 @@ std::string deframingFunc(std::string framedMessage)
     return originalMessage;
 }
 
+std::char noname(std::char c)
+{
+    bitset<8> chr(c);
+    int random = pow(rand(0, 7),2);
+    bitset<8> thief(random);
+    chr = chr ^ thief;
+    int chr_int = (int)(chr.to_ulong());
+    char cnew = (char)chr_int;
+    return cnew;
+}
+
 std::string modifier(std::string payload, std::string modifierBits)
 {
     int error = stoi(modifierBits);
@@ -66,22 +77,17 @@ std::string modifier(std::string payload, std::string modifierBits)
     case 0001:
         delay = true;
         return (paylaod);
-        // sendDelayed(payload, 5.0, "out");
         break;
 
     case 0010:
         duplicate = true;
         return (payload);
-        // sendDelayed(payload, 1.0, "out");
-        // sendDelayed(payload, 0.1, "out");
         break;
 
     case 0011:
         delay = true;
         duplicate = true;
         return (payload);
-        // sendDelayed(payload, 5.0, "out");
-        // sendDelayed(payload, 0.1, "out");
         break;
 
     case 0100:
@@ -113,35 +119,34 @@ std::string modifier(std::string payload, std::string modifierBits)
         break;
 
     case 1000:
-        int rand = uniform(0, 1) * 10;
         int index = rand(0, payload.size());
-        payload[index] = payload[index] + rand;
+        char cnew = noname(payload[index]);
+        payload[index] = cnew;
         modified = true;
         return (payload);
         break;
 
     case 1001:
-        int rand = uniform(0, 1) * 10;
         int index = rand(0, payload.size());
-        payload[index] = payload[index] + rand;
+        char cnew = noname(payload[index]);
+        payload[index] = cnew;
         delay = true;
         modified = true;
         return (payload);
         break;
-
     case 1010:
-        int rand = uniform(0, 1) * 10;
         int index = rand(0, payload.size());
-        payload[index] = payload[index] + rand;
+        char cnew = noname(payload[index]);
+        payload[index] = cnew;
         duplicate = true;
         modified = true;
         return (payload);
         break;
 
     case 1011:
-        int rand = uniform(0, 1) * 10;
         int index = rand(0, payload.size());
-        payload[index] = payload[index] + rand;
+        char cnew = noname(payload[index]);
+        payload[index] = cnew;
         delay = true;
         duplicate = true;
         modified = true;
@@ -150,18 +155,30 @@ std::string modifier(std::string payload, std::string modifierBits)
 
     case 1100:
         loss = true;
+        modified = true;
         return ("");
         break;
 
     case 1101:
+        delay = true;
         loss = true;
+        modified = true;
         return ("");
         break;
 
     case 1110:
+        duplicate = true;
+        loss = true;
+        modified = true;
+        return ("");
         break;
 
     case 1111:
+        delay = true;
+        duplicate = true;
+        loss = true;
+        modified = true;
+        return ("");
         break;
 
     default:
