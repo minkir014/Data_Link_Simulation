@@ -28,10 +28,10 @@ using namespace omnetpp;
 class Node : public cSimpleModule
 {
   protected:
-    bool duplicate;
-    bool modified;
-    bool loss;
-    bool delay;
+    bool duplicate = false;
+    bool modified = false;
+    bool loss = false;
+    bool delay = false;
     int outputType; // 0: Reading, 1: Transmission of Data, 2: TimeOut, 3: ControlFrame
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
