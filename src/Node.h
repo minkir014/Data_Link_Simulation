@@ -44,7 +44,7 @@ class Node : public cSimpleModule
             bool modified, bool lost, int duplicate, double delay, bool AckOrNack); // 0: Sent, 1: Received
                                                                    //0: ACK, 1: NACK
 
-    virtual void readFromFile();
+    virtual void readFromFile(int nodeIndex);
 
 };
 
