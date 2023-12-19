@@ -91,12 +91,14 @@ std::string modifier(std::string payload, std::string modifierBits)
         break;
 
     case 0100:
+        lostcount++;
         loss = true;
         return ("");
         // no sending
         break;
 
     case 0101:
+        lostcount++;
         delay = true;
         loss = true;
         return ("");
@@ -104,6 +106,7 @@ std::string modifier(std::string payload, std::string modifierBits)
         break;
 
     case 0110:
+        lostcount++;
         duplicate = true;
         loss = true;
         return ("");
@@ -111,6 +114,7 @@ std::string modifier(std::string payload, std::string modifierBits)
         break;
 
     case 0111:
+        lostcount++;
         delay = true;
         duplicate = true;
         loss = true;
@@ -119,6 +123,7 @@ std::string modifier(std::string payload, std::string modifierBits)
         break;
 
     case 1000:
+        modifiedcount++;
         int index = rand(0, payload.size());
         char cnew = noname(payload[index]);
         payload[index] = cnew;
@@ -127,6 +132,7 @@ std::string modifier(std::string payload, std::string modifierBits)
         break;
 
     case 1001:
+        modifiedcount++;
         int index = rand(0, payload.size());
         char cnew = noname(payload[index]);
         payload[index] = cnew;
@@ -134,7 +140,9 @@ std::string modifier(std::string payload, std::string modifierBits)
         modified = true;
         return (payload);
         break;
+
     case 1010:
+        modifiedcount++;
         int index = rand(0, payload.size());
         char cnew = noname(payload[index]);
         payload[index] = cnew;
@@ -144,6 +152,7 @@ std::string modifier(std::string payload, std::string modifierBits)
         break;
 
     case 1011:
+        modifiedcount++;
         int index = rand(0, payload.size());
         char cnew = noname(payload[index]);
         payload[index] = cnew;
@@ -154,12 +163,16 @@ std::string modifier(std::string payload, std::string modifierBits)
         break;
 
     case 1100:
+        modifiedcount++;
+        lostcount++;
         loss = true;
         modified = true;
         return ("");
         break;
 
     case 1101:
+        modifiedcount++;
+        lostcount++;
         delay = true;
         loss = true;
         modified = true;
@@ -167,6 +180,8 @@ std::string modifier(std::string payload, std::string modifierBits)
         break;
 
     case 1110:
+        modifiedcount++;
+        lostcount++;
         duplicate = true;
         loss = true;
         modified = true;
@@ -174,6 +189,8 @@ std::string modifier(std::string payload, std::string modifierBits)
         break;
 
     case 1111:
+        modifiedcount++;
+        lostcount++;
         delay = true;
         duplicate = true;
         loss = true;
