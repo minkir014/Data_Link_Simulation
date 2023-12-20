@@ -766,7 +766,7 @@ std::string MmsgDescriptor::getFieldValueAsString(omnetpp::any_ptr object, int f
         case FIELD_ackNum: return long2string(pp->getAckNum());
         case FIELD_payload: return oppstring2string(pp->getPayload());
         case FIELD_checksum: return "";
-        default: return "";
+        default: return pp->getChecksum().str();
     }
 }
 
