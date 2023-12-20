@@ -19,6 +19,9 @@
 #include <omnetpp.h>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <bitset>
+#include <cstdlib>
 
 using namespace omnetpp;
 
@@ -43,6 +46,7 @@ protected:
   virtual std::string framingFunc(std::string message);
   virtual std::string deframingFunc(std::string payload);
   virtual std::string modifier(std::string payload, std::string modifierBits);
+  virtual char randomizer_helper(char c);
   virtual void logEvents(std::string modifierCode, bool sentOrReceived, int seq_num, std::string payload, std::string trailer,
                          bool modified, bool lost, int duplicate, double delay, bool AckOrNack); // 0: Sent, 1: Received
                                                                                                  // 0: ACK, 1: NACK

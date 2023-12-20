@@ -17,7 +17,7 @@
 
 Define_Module(Node);
 
-std::string framingFunc(std::string originalMessage)
+std::string Node::framingFunc(std::string originalMessage)
 {
     std::string framedMessage = "#"; // start with the starting flag
     for (char c : originalMessage)
@@ -32,7 +32,7 @@ std::string framingFunc(std::string originalMessage)
     return framedMessage;
 }
 
-std::string deframingFunc(std::string framedMessage)
+std::string Node::deframingFunc(std::string framedMessage)
 {
     std::string originalMessage;
     bool isEscaped = false;
@@ -53,20 +53,22 @@ std::string deframingFunc(std::string framedMessage)
     return originalMessage;
 }
 
-std::char noname(std::char c)
+char Node::randomizer_helper(char c)
 {
-    bitset<8> chr(c);
-    int random = pow(rand(0, 7),2);
-    bitset<8> thief(random);
+    std::bitset<8> chr(c);
+    int random = pow(rand()%8,2);    // why the pow of 2?
+    std::bitset<8> thief(random);
     chr = chr ^ thief;
     int chr_int = (int)(chr.to_ulong());
     char cnew = (char)chr_int;
     return cnew;
 }
 
-std::string modifier(std::string payload, std::string modifierBits)
+std::string Node::modifier(std::string payload, std::string modifierBits)
 {
     int error = stoi(modifierBits);
+    int index;
+    char cnew;
 
     switch (error)
     {
@@ -76,7 +78,7 @@ std::string modifier(std::string payload, std::string modifierBits)
 
     case 0001:
         delay = true;
-        return (paylaod);
+        return (payload);
         break;
 
     case 0010:
@@ -124,8 +126,8 @@ std::string modifier(std::string payload, std::string modifierBits)
 
     case 1000:
         modifiedcount++;
-        int index = rand(0, payload.size());
-        char cnew = noname(payload[index]);
+        index = rand()%payload.size();
+        cnew = randomizer_helper(payload[index]);
         payload[index] = cnew;
         modified = true;
         return (payload);
@@ -133,8 +135,8 @@ std::string modifier(std::string payload, std::string modifierBits)
 
     case 1001:
         modifiedcount++;
-        int index = rand(0, payload.size());
-        char cnew = noname(payload[index]);
+        index = rand()%payload.size();
+        cnew = randomizer_helper(payload[index]);
         payload[index] = cnew;
         delay = true;
         modified = true;
@@ -143,8 +145,8 @@ std::string modifier(std::string payload, std::string modifierBits)
 
     case 1010:
         modifiedcount++;
-        int index = rand(0, payload.size());
-        char cnew = noname(payload[index]);
+        index = rand()%payload.size();
+        cnew = randomizer_helper(payload[index]);
         payload[index] = cnew;
         duplicate = true;
         modified = true;
@@ -153,8 +155,8 @@ std::string modifier(std::string payload, std::string modifierBits)
 
     case 1011:
         modifiedcount++;
-        int index = rand(0, payload.size());
-        char cnew = noname(payload[index]);
+        index = rand()%payload.size();
+        cnew = randomizer_helper(payload[index]);
         payload[index] = cnew;
         delay = true;
         duplicate = true;
@@ -198,17 +200,17 @@ std::string modifier(std::string payload, std::string modifierBits)
         return ("");
         break;
 
-    default:
+    default:  //should return something at default case except if it is guarenteed not to be reached
         break;
     }
 }
 
-void logEvents(std::string modifierCode, bool sentOrReceived, int seq_num, std::string payload, std::string trailer,
+void Node::logEvents(std::string modifierCode, bool sentOrReceived, int seq_num, std::string payload, std::string trailer,
                bool modified, bool lost, int duplicate, double delay, bool AckOrNack)
 {
 }
 
-void readFromFile(int nodeIndex)
+void Node::readFromFile(int nodeIndex)
 {
     std::string filename = "input" + std::to_string(nodeIndex) + ".txt"; // construct the filename based on the node index
     std::ifstream inputFile(filename);
