@@ -25,7 +25,7 @@ class bits {@existingClass;}
 packet Mmsg {
     @customize(true);  // see the generated C++ header for more info
     int SN;
-    int frameType;
+    int frameType; // 0: data, 1: ACK, 2: NACK
     int ackNum;
     string payload;
     bits checksum;

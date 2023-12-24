@@ -22,6 +22,7 @@
 #include <fstream>
 #include <bitset>
 #include <cstdlib>
+#include "Mmsg_m.h"
 
 using namespace omnetpp;
 
@@ -32,13 +33,23 @@ class Node : public cSimpleModule
 {
 protected:
   
+  int ackExpected = 0; int next_frame_to_send = 0;
+  int frameExpected = 0; int too_far = 0;
+  bool no_nak = 0;
+
   int lostcount = 0;
   int modifiedcount = 0;
   bool duplicate = false;
   bool modified = false;
   bool loss = false;
   bool delay = false;
-  int outputType; // 0: Reading, 1: Transmission of Data, 2: TimeOut, 3: ControlFrame
+  int outputType = 0; // 0: Reading, 1: Transmission of Data, 2: TimeOut, 3: ControlFrame
+  int* window = 0;
+  int windowCount = 0;
+  cMessage** msgPointers = 0;
+  int MAX_SEQ = 0;
+  int counter = 0;
+  int idOfSending = 0;
   virtual void initialize() override;
   virtual void handleMessage(cMessage *msg) override;
   std::vector<std::string> inputMessages;
@@ -52,6 +63,8 @@ protected:
                                                                                                  // 0: ACK, 1: NACK
 
   virtual void readFromFile(int nodeIndex);
+  virtual std::bitset<8> generateCheckSum(std::string message);
+  virtual bool between(int a, int b, int c); // a: frame_expected, b: frame, c: too_far
 };
 
 #endif

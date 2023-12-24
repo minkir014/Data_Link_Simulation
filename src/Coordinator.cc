@@ -27,6 +27,11 @@ void Coordinator::initialize()
 
     // assuming coordinator.txt contains a single line of the form: [1 5] 1->nodeId, 5->startTime
     std::ifstream inputFile("coordinator.txt");
+    if (!inputFile)
+    {
+        EV << "Cannot open input file: coordinator.txt" << "\n";
+        return;
+    }
     std::string line;
 
     std::getline(inputFile, line);
@@ -39,15 +44,15 @@ void Coordinator::initialize()
     int nodeId =0 ;
     double startTime= 1; // random intialize
 
-    cout <<"coordinator reads : " <<  nodeId << " " << startTime << endl;
 
-
-    if (!(iss >> dum >> nodeId >> startTime))
+    if (!(iss >> nodeId >> startTime))
     {
         cout << "Error parsing the line no msg is send " << endl;
         EV << "Error parsing line: " << line << "\n";
         return ;
     }
+
+    cout <<"coordinator reads : " <<  nodeId << " " << startTime << endl;
     // craete a message
     cMessage *msg = new cMessage(std::to_string(nodeId).c_str());
     // scheduale the message to the node
@@ -60,10 +65,13 @@ void Coordinator::handleMessage(cMessage *msg)
     // TODO - Generated method body
     // send the message to the node
     cMessage * start = new cMessage("start");
+    cMessage * Nostart = new cMessage("Nostart");
     if(string(msg->getName())== "0"){
         send(start, "out0");
-    }else {
+        send(Nostart, "out1");
+    } else {
         send(start, "out1");
+        send(Nostart, "out0");
     }
 
 
