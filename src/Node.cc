@@ -56,7 +56,7 @@ std::string Node::deframingFunc(std::string framedMessage)
 char Node::randomizer_helper(char c)
 {
     std::bitset<8> chr(c);
-    int random = pow(rand() % 8, 2); // why the pow of 2?
+    int random = pow(2, rand() % 8);
     std::bitset<8> thief(random);
     chr = chr ^ thief;
     int chr_int = (int)(chr.to_ulong());
@@ -247,7 +247,7 @@ std::bitset<8> Node::generateCheckSum(std::string message)
 
     return checkSum;
 }
-
+// 5 -1  0
 bool Node::between(int a, int b, int c)
 {
     return (a <= b && b < c) || (c < a && a <= b) || (b < c && c < a);
@@ -271,9 +271,10 @@ void Node::handleMessage(cMessage *msg)
     {
         window = new int[par("WindowSender").intValue()];
         msgPointers = new cMessage *[par("WindowSender").intValue()];
-        MAX_SEQ = 2 * par("WindowSender").intValue() - 1;
+        MAX_SEQ = 2 * par("WindowSender").intValue();
         sender = true;
         counter = 0;
+        std::cout << "Messages Count: " << inputMessages.size() << endl;
         ackExpected = 0;
         next_frame_to_send = 0;
         windowCount = 0;
@@ -285,7 +286,7 @@ void Node::handleMessage(cMessage *msg)
         {
             window[i] = 0;
         }
-        MAX_SEQ = 2 * par("WindowReceiver").intValue() - 1;
+        MAX_SEQ = 2 * par("WindowReceiver").intValue();
         frameExpected = 0;
         too_far = par("WindowReceiver").intValue();
         no_nak = false;
@@ -317,9 +318,11 @@ void Node::handleMessage(cMessage *msg)
         simtime_t delayNum = par("ProcessingTime").doubleValue() + par("TransmissionDelay").doubleValue();
         std::string deframedPayload = deframingFunc(received->getPayload());
         std::bitset<8> checksum = generateCheckSum(deframedPayload);
-        if (checksum.to_ulong() == received->getChecksum().to_ulong())
+        std::cout << "Payload: " << received->getPayload() << endl;
+
+        if (received->getSN() == frameExpected)
         {
-            if (received->getSN() == frameExpected)
+            if (checksum.to_ulong() == received->getChecksum().to_ulong())
             {
                 frameExpected++;
                 frameExpected %= MAX_SEQ;
@@ -327,38 +330,43 @@ void Node::handleMessage(cMessage *msg)
                 too_far %= MAX_SEQ;
                 while (window[frameExpected % par("WindowReceiver").intValue()] == 1)
                 {
+                    window[frameExpected % par("WindowReceiver").intValue()] = 0;
                     frameExpected++;
                     frameExpected %= MAX_SEQ;
                     too_far++;
                     too_far %= MAX_SEQ;
-                    window[received->getSN() % par("WindowReceiver").intValue()] = 0;
                 }
                 received->setName("To Send");
                 received->setAckNum(frameExpected);
                 received->setFrameType(1);
                 scheduleAt(simTime() + delayNum, received);
                 no_nak = false;
+                std::cout << "I sent some ack at " << simTime().dbl() << endl;
                 return;
             }
-            else if (between(frameExpected, received->getSN(), too_far))
-            {
-                window[received->getSN() % par("WindowReceiver").intValue()] = 1;
-            }
-            else
-                return;
         }
+        else if (between(frameExpected, received->getSN(), too_far))
+        {
+            if (checksum.to_ulong() == received->getChecksum().to_ulong())
+                window[received->getSN() % par("WindowReceiver").intValue()] = 1;
+        }
+        else
+            return;
+
         if (!no_nak)
         {
             received->setName("To Send");
+            std::cout << "I sent some nack at " << simTime().dbl() << endl;
             received->setAckNum(frameExpected);
             received->setFrameType(2);
             no_nak = true;
             scheduleAt(simTime() + delayNum, received);
         }
     }
-    else if (strcmp(msg->getName(), "TimeOut") == 0) {
+    else if (strcmp(msg->getName(), "TimeOut") == 0)
+    {
         Mmsg_Base *controlFrame = check_and_cast<Mmsg_Base *>(msg);
-        controlFrame->setAckNum(controlFrame->getAckNum());
+        controlFrame->setAckNum(controlFrame->getSN());
         msg = controlFrame;
         retransmit = true;
         sender = true;
@@ -368,16 +376,18 @@ void Node::handleMessage(cMessage *msg)
         Mmsg_Base *controlFrame = check_and_cast<Mmsg_Base *>(msg);
         if (controlFrame->getFrameType() == 1)
         {
-            while (between(ackExpected, controlFrame->getAckNum() - 1, next_frame_to_send)) {
-                cancelEvent(msgPointers[ackExpected]);
+            while (between(ackExpected, controlFrame->getAckNum() - 1, next_frame_to_send))
+            {
+                cancelEvent(msgPointers[ackExpected % par("WindowSender").intValue()]);
                 ackExpected++;
                 ackExpected %= MAX_SEQ;
                 windowCount--;
-                if (counter != inputMessages.size()) sender = true;
+                if (counter != inputMessages.size())
+                    sender = true;
             }
         }
         else if (controlFrame->getFrameType() == 2 && ackExpected != inputMessages.size())
-            // NACKs never get out of range. Check.
+        // NACKs never get out of range. Check.
         {
             retransmit = true;
             sender = true;
@@ -388,15 +398,17 @@ void Node::handleMessage(cMessage *msg)
     {
         std::string modifiedPayload;
         int tempInt;
-        if (retransmit) {
+        if (retransmit)
+        {
             Mmsg_Base *controlFrame = check_and_cast<Mmsg_Base *>(msg);
-            tempInt = controlFrame->getAckNum();
-            modifiedPayload = inputMessages[window[tempInt]];
+            tempInt = window[controlFrame->getAckNum() % par("WindowSender").intValue()];
+            modifiedPayload = inputMessages[tempInt];
         }
-        else {
+        else
+        {
             tempInt = counter;
             modifiedPayload = modifier(inputMessages[tempInt],
-                                               inputModifiers[tempInt]);
+                                       inputModifiers[tempInt]);
         }
         std::string stuffedPayload = framingFunc(modifiedPayload);
         Mmsg_Base *sentMsg = new Mmsg_Base("To Send");
@@ -407,7 +419,8 @@ void Node::handleMessage(cMessage *msg)
 
         double sentNumber = par("ProcessingTime").doubleValue() + par("TransmissionDelay").doubleValue();
 
-        if (retransmit) {
+        if (retransmit)
+        {
             scheduleAt(simTime() + sentNumber, sentMsg);
             return;
         }
@@ -421,6 +434,7 @@ void Node::handleMessage(cMessage *msg)
             {
                 double delayNumber = par("ErrorDelay").doubleValue();
                 sentNumber = sentNumber + delayNumber;
+                std::cout << "Delay Sum: " << simTime().dbl() << " + " << sentNumber << " = " << (simTime() + sentNumber).dbl() << endl;
                 scheduleAt(simTime() + sentNumber, sentMsg);
             }
             else
@@ -449,6 +463,7 @@ void Node::handleMessage(cMessage *msg)
         next_frame_to_send %= MAX_SEQ;
         counter++;
         windowCount++;
+        std::cout << "I sent: " << sentMsg->getPayload() << "@ " << simTime() << endl;
         if (windowCount != par("WindowSender").intValue() && counter != inputMessages.size())
         {
             Mmsg_Base *Processing = new Mmsg_Base("Process");

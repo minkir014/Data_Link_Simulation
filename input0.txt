@@ -1,0 +1,3 @@
+1010	Good Morning
+0100	Good night 
+0000	Mina3abet

@@ -58,6 +58,8 @@ void Coordinator::initialize()
     // scheduale the message to the node
     scheduleAt((simtime_t)startTime, msg);
 
+    inputFile.close();
+
 }
 
 void Coordinator::handleMessage(cMessage *msg)

@@ -1,3 +1,15 @@
-0011	Good Morning
-0000	Good night 
-0000	Mina3abet
+0000	Osama
+0010	Heggi
+1010	Mina
+1000	Malek
+0110	Mohamed
+0101	Fares
+1011	CCE
+0111	CUFE
+0100	Malek
+1100	Good Morning
+0000	Gooood
+0011	Fares
+1011	Anaaaa
+1111	Osama
+0000	Mina

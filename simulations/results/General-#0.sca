@@ -1,8 +1,8 @@
 version 3
-run General-0-20231225-01:33:20-30388
+run General-0-20231226-20:04:05-32172
 attr configname General
-attr datetime 20231225-01:33:20
-attr datetimef 20231225-013320
+attr datetime 20231226-20:04:05
+attr datetimef 20231226-200405
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,13 +10,12 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network datalinksimulation.Network
-attr processid 30388
+attr processid 32172
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
-config debug-on-errors true
 config network datalinksimulation.Network
 config Node0.WindowSender 3
 config Node0.WindowReceiver 3
