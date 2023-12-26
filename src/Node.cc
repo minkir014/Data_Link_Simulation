@@ -302,7 +302,7 @@ void Node::handleMessage(cMessage *msg)
         if (scheduled->getFrameType() == 0)
         {
             scheduled->setName("Message");
-            totalsent++;
+            totalsent += 1;
             lengths += std::string(scheduled->getPayload()).size()*8;
         }
 
@@ -335,6 +335,7 @@ void Node::handleMessage(cMessage *msg)
                 frameExpected %= MAX_SEQ;
                 too_far++;
                 too_far %= MAX_SEQ;
+                sucessfull++;
                 while (window[frameExpected % par("WindowReceiver").intValue()] == 1)
                 {
                     window[frameExpected % par("WindowReceiver").intValue()] = 0;
@@ -342,7 +343,9 @@ void Node::handleMessage(cMessage *msg)
                     frameExpected %= MAX_SEQ;
                     too_far++;
                     too_far %= MAX_SEQ;
+                    sucessfull++;
                 }
+
                 received->setName("To Send");
                 received->setAckNum(frameExpected);
                 received->setFrameType(1);
@@ -469,7 +472,7 @@ void Node::handleMessage(cMessage *msg)
         scheduleAt(simTime() + timeOutNumber, sentTimer);
 
         time_to_send -= simTime().dbl();
-    
+
         next_frame_to_send++;
         next_frame_to_send %= MAX_SEQ;
         counter++;
@@ -482,5 +485,17 @@ void Node::handleMessage(cMessage *msg)
             scheduleAt(simTime() + processingTime,
                        Processing);
         }
+    }
+}
+
+void Node::finish()
+{
+    if(totalsent!= 0)
+    {
+        std::cout << "All messages have been successfully processed." << endl;
+        std::cout << "Loss Rate = " << (lostcount*1.000) / totalsent << endl;
+        std::cout << "Modifications Rate = " << (modifiedcount*1.000) / totalsent << endl;
+        std::cout << "Average BW = " << (lengths*1.000) / totalsent << endl;
+        std::cout << "Average time taken to send message = " << time_to_send/totalsent << endl;
     }
 }

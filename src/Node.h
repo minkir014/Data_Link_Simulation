@@ -39,7 +39,7 @@ protected:
 
   int lostcount = 0;
   int modifiedcount = 0;
-  int usefulcount = 0;
+  int sucessfull = 0;
   int totalsent = 0;
   int lengths = 0;
   double time_to_send = 0;
@@ -66,6 +66,7 @@ protected:
                          bool modified, bool lost, int duplicate, double delay, bool AckOrNack); // 0: Sent, 1: Received
                                                                                                  // 0: ACK, 1: NACK
 
+  virtual void finish() override;
   virtual void readFromFile(int nodeIndex);
   virtual std::bitset<8> generateCheckSum(std::string message);
   virtual bool between(int a, int b, int c); // a: frame_expected, b: frame, c: too_far
