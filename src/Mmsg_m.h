@@ -29,10 +29,12 @@ typedef  std::bitset<8> bits;
  * {
  *     \@customize(true);  // see the generated C++ header for more info
  *     int SN;
- *     int frameType;
+ *     int frameType; // 0: data, 1: ACK, 2: NACK
  *     int ackNum;
  *     string payload;
  *     bits checksum;
+ *     int dupCount;
+ *     int modifiedBitNumber;
  * }
  * </pre>
  *
@@ -68,6 +70,8 @@ class Mmsg_Base : public ::omnetpp::cPacket
     int ackNum = 0;
     omnetpp::opp_string payload;
     bits checksum;
+    int dupCount = 0;
+    int modifiedBitNumber = 0;
 
   private:
     void copy(const Mmsg_Base& other);
@@ -80,8 +84,8 @@ class Mmsg_Base : public ::omnetpp::cPacket
     Mmsg_Base& operator=(const Mmsg_Base& other);
 
   public:
-    Mmsg_Base(const char *name=nullptr, short kind=0);
     virtual ~Mmsg_Base();
+    Mmsg_Base(const char *name=nullptr, short kind=0);
     virtual Mmsg_Base *dup() const override {return new Mmsg_Base(*this);}
     virtual void parsimPack(omnetpp::cCommBuffer *b) const override;
     virtual void parsimUnpack(omnetpp::cCommBuffer *b) override;
@@ -101,6 +105,12 @@ class Mmsg_Base : public ::omnetpp::cPacket
     virtual const bits& getChecksum() const;
     virtual bits& getChecksumForUpdate() { return const_cast<bits&>(const_cast<Mmsg_Base*>(this)->getChecksum());}
     virtual void setChecksum(const bits& checksum);
+
+    virtual int getDupCount() const;
+    virtual void setDupCount(int dupCount);
+
+    virtual int getModifiedBitNumber() const;
+    virtual void setModifiedBitNumber(int modifiedBitNumber);
 };
 
 

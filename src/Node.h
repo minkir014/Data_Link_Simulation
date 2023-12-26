@@ -36,7 +36,6 @@ protected:
   int ackExpected = 0; int next_frame_to_send = 0;
   int frameExpected = 0; int too_far = 0;
   bool no_nak = 0;
-
   int lostcount = 0;
   int modifiedcount = 0;
   bool duplicate = false;
@@ -58,10 +57,10 @@ protected:
   virtual std::string deframingFunc(std::string payload);
   virtual std::string modifier(std::string payload, std::string modifierBits);
   virtual char randomizer_helper(char c);
-  virtual void logEvents(std::string modifierCode, bool sentOrReceived, int seq_num, std::string payload, std::string trailer,
-                         bool modified, bool lost, int duplicate, double delay, bool AckOrNack); // 0: Sent, 1: Received
-                                                                                                 // 0: ACK, 1: NACK
-
+  virtual void logReadLineSender(std::string modifierCode); // 0: Sent, 1: Received
+  virtual void logBeforeTrans(double timeAfterProc, std::string sentOrRecieved, int seq_num, std::string payload, std::string trailer, int modifiedBitNum, std::string lost, int dup, double delay, std::string modifierCode);
+  virtual void logTimeOut(double timerOftimeout, int seq_num);
+  virtual void logControlFrame(double timeAfterProc, std::string ackOrNack, int controlFrameNum, std::string lost);                                                                  
   virtual void readFromFile(int nodeIndex);
   virtual std::bitset<8> generateCheckSum(std::string message);
   virtual bool between(int a, int b, int c); // a: frame_expected, b: frame, c: too_far

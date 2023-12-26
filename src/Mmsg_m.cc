@@ -463,6 +463,8 @@ void Mmsg_Base::copy(const Mmsg_Base& other)
     this->ackNum = other.ackNum;
     this->payload = other.payload;
     this->checksum = other.checksum;
+    this->dupCount = other.dupCount;
+    this->modifiedBitNumber = other.modifiedBitNumber;
 }
 
 void Mmsg_Base::parsimPack(omnetpp::cCommBuffer *b) const
@@ -473,6 +475,8 @@ void Mmsg_Base::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->ackNum);
     doParsimPacking(b,this->payload);
     doParsimPacking(b,this->checksum);
+    doParsimPacking(b,this->dupCount);
+    doParsimPacking(b,this->modifiedBitNumber);
 }
 
 void Mmsg_Base::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -483,6 +487,8 @@ void Mmsg_Base::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->ackNum);
     doParsimUnpacking(b,this->payload);
     doParsimUnpacking(b,this->checksum);
+    doParsimUnpacking(b,this->dupCount);
+    doParsimUnpacking(b,this->modifiedBitNumber);
 }
 
 int Mmsg_Base::getSN() const
@@ -535,6 +541,26 @@ void Mmsg_Base::setChecksum(const bits& checksum)
     this->checksum = checksum;
 }
 
+int Mmsg_Base::getDupCount() const
+{
+    return this->dupCount;
+}
+
+void Mmsg_Base::setDupCount(int dupCount)
+{
+    this->dupCount = dupCount;
+}
+
+int Mmsg_Base::getModifiedBitNumber() const
+{
+    return this->modifiedBitNumber;
+}
+
+void Mmsg_Base::setModifiedBitNumber(int modifiedBitNumber)
+{
+    this->modifiedBitNumber = modifiedBitNumber;
+}
+
 class MmsgDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -545,6 +571,8 @@ class MmsgDescriptor : public omnetpp::cClassDescriptor
         FIELD_ackNum,
         FIELD_payload,
         FIELD_checksum,
+        FIELD_dupCount,
+        FIELD_modifiedBitNumber,
     };
   public:
     MmsgDescriptor();
@@ -612,7 +640,7 @@ const char *MmsgDescriptor::getProperty(const char *propertyName) const
 int MmsgDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 5+base->getFieldCount() : 5;
+    return base ? 7+base->getFieldCount() : 7;
 }
 
 unsigned int MmsgDescriptor::getFieldTypeFlags(int field) const
@@ -629,8 +657,10 @@ unsigned int MmsgDescriptor::getFieldTypeFlags(int field) const
         FD_ISEDITABLE,    // FIELD_ackNum
         FD_ISEDITABLE,    // FIELD_payload
         FD_ISCOMPOUND,    // FIELD_checksum
+        FD_ISEDITABLE,    // FIELD_dupCount
+        FD_ISEDITABLE,    // FIELD_modifiedBitNumber
     };
-    return (field >= 0 && field < 5) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 7) ? fieldTypeFlags[field] : 0;
 }
 
 const char *MmsgDescriptor::getFieldName(int field) const
@@ -647,8 +677,10 @@ const char *MmsgDescriptor::getFieldName(int field) const
         "ackNum",
         "payload",
         "checksum",
+        "dupCount",
+        "modifiedBitNumber",
     };
-    return (field >= 0 && field < 5) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 7) ? fieldNames[field] : nullptr;
 }
 
 int MmsgDescriptor::findField(const char *fieldName) const
@@ -660,6 +692,8 @@ int MmsgDescriptor::findField(const char *fieldName) const
     if (strcmp(fieldName, "ackNum") == 0) return baseIndex + 2;
     if (strcmp(fieldName, "payload") == 0) return baseIndex + 3;
     if (strcmp(fieldName, "checksum") == 0) return baseIndex + 4;
+    if (strcmp(fieldName, "dupCount") == 0) return baseIndex + 5;
+    if (strcmp(fieldName, "modifiedBitNumber") == 0) return baseIndex + 6;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -677,8 +711,10 @@ const char *MmsgDescriptor::getFieldTypeString(int field) const
         "int",    // FIELD_ackNum
         "string",    // FIELD_payload
         "bits",    // FIELD_checksum
+        "int",    // FIELD_dupCount
+        "int",    // FIELD_modifiedBitNumber
     };
-    return (field >= 0 && field < 5) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 7) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **MmsgDescriptor::getFieldPropertyNames(int field) const
@@ -766,7 +802,9 @@ std::string MmsgDescriptor::getFieldValueAsString(omnetpp::any_ptr object, int f
         case FIELD_ackNum: return long2string(pp->getAckNum());
         case FIELD_payload: return oppstring2string(pp->getPayload());
         case FIELD_checksum: return "";
-        default: return pp->getChecksum().to_string();
+        case FIELD_dupCount: return long2string(pp->getDupCount());
+        case FIELD_modifiedBitNumber: return long2string(pp->getModifiedBitNumber());
+        default: return "";
     }
 }
 
@@ -786,6 +824,8 @@ void MmsgDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int field, i
         case FIELD_frameType: pp->setFrameType(string2long(value)); break;
         case FIELD_ackNum: pp->setAckNum(string2long(value)); break;
         case FIELD_payload: pp->setPayload((value)); break;
+        case FIELD_dupCount: pp->setDupCount(string2long(value)); break;
+        case FIELD_modifiedBitNumber: pp->setModifiedBitNumber(string2long(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'Mmsg_Base'", field);
     }
 }
@@ -805,6 +845,8 @@ omnetpp::cValue MmsgDescriptor::getFieldValue(omnetpp::any_ptr object, int field
         case FIELD_ackNum: return pp->getAckNum();
         case FIELD_payload: return pp->getPayload();
         case FIELD_checksum: return omnetpp::toAnyPtr(&pp->getChecksum()); break;
+        case FIELD_dupCount: return pp->getDupCount();
+        case FIELD_modifiedBitNumber: return pp->getModifiedBitNumber();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'Mmsg_Base' as cValue -- field index out of range?", field);
     }
 }
@@ -825,6 +867,8 @@ void MmsgDescriptor::setFieldValue(omnetpp::any_ptr object, int field, int i, co
         case FIELD_frameType: pp->setFrameType(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_ackNum: pp->setAckNum(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_payload: pp->setPayload(value.stringValue()); break;
+        case FIELD_dupCount: pp->setDupCount(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_modifiedBitNumber: pp->setModifiedBitNumber(omnetpp::checked_int_cast<int>(value.intValue())); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'Mmsg_Base'", field);
     }
 }

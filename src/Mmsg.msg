@@ -29,4 +29,6 @@ packet Mmsg {
     int ackNum;
     string payload;
     bits checksum;
+    int dupCount;
+    int modifiedBitNumber;
 }

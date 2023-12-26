@@ -209,11 +209,6 @@ std::string Node::modifier(std::string payload, std::string modifierBits)
     }
 }
 
-void Node::logEvents(std::string modifierCode, bool sentOrReceived, int seq_num,
-                     std::string payload, std::string trailer, bool modified, bool lost,
-                     int duplicate, double delay, bool AckOrNack)
-{
-}
 
 void Node::readFromFile(int nodeIndex)
 {
@@ -251,6 +246,39 @@ std::bitset<8> Node::generateCheckSum(std::string message)
 bool Node::between(int a, int b, int c)
 {
     return (a <= b && b < c) || (c < a && a <= b) || (b < c && c < a);
+}
+
+void Node::logReadLineSender(std::string modifierCode)
+{
+    std::ofstream outputFile;
+    outputFile.open("output.txt", std::ios_base::app);
+    outputFile << "At time " << simTime() << ", Node" << idOfSending << ", Introducing channel error with code = " << modifierCode << ".\n";
+    outputFile.close();
+}
+
+void Node::logBeforeTrans(double timeAfterProc, std::string sentOrRecieved, int seq_num, std::string payload, std::string trailer, int modifiedBitNum, std::string lost, int dup, double delay, std::string modifierCode)
+{
+
+    std::ofstream outputFile;
+    outputFile.open("output.txt", std::ios_base::app);
+    outputFile << "At time " << timeAfterProc << ", Node" << idOfSending << ", with seq_num = " << seq_num << ", and payload = " << payload << ", and trailer = " << trailer << ", Modified = " << modifiedBitNum << ", Lost = " << lost << ", Duplicate = " << dup << ", Delay = " << delay << ".\n";
+    outputFile.close();
+}
+
+void Node::logTimeOut(double timerOftimeout, int seq_num)
+{
+    std::ofstream outputFile;
+    outputFile.open("output.txt", std::ios_base::app);
+    outputFile << "Timeout event at time " << timerOftimeout << ", at Node" << idOfSending << ", for frame with seq_num = " << seq_num << ".\n";
+    outputFile.close();
+}
+
+void Node::logControlFrame(double timeAfterProc, std::string ackOrNack, int controlFrameNum, std::string lost)
+{
+    std::ofstream outputFile;
+    outputFile.open("output.txt", std::ios_base::app);
+    outputFile << "At time " << timeAfterProc << ", Node" << idOfSending << ", sending = " << ackOrNack << ", with number = " << controlFrameNum << ", Loss" << lost << ".\n";
+    outputFile.close();
 }
 
 void Node::initialize()
@@ -396,6 +424,7 @@ void Node::handleMessage(cMessage *msg)
 
     if (sender)
     {
+
         std::string modifiedPayload;
         int tempInt;
         if (retransmit)
@@ -403,12 +432,15 @@ void Node::handleMessage(cMessage *msg)
             Mmsg_Base *controlFrame = check_and_cast<Mmsg_Base *>(msg);
             tempInt = window[controlFrame->getAckNum() % par("WindowSender").intValue()];
             modifiedPayload = inputMessages[tempInt];
+            logReadLineSender("0000");
         }
         else
         {
+
             tempInt = counter;
             modifiedPayload = modifier(inputMessages[tempInt],
                                        inputModifiers[tempInt]);
+            logReadLineSender(inputModifiers[tempInt]);
         }
         std::string stuffedPayload = framingFunc(modifiedPayload);
         Mmsg_Base *sentMsg = new Mmsg_Base("To Send");
@@ -418,12 +450,18 @@ void Node::handleMessage(cMessage *msg)
         sentMsg->setChecksum(generateCheckSum(inputMessages[tempInt]));
 
         double sentNumber = par("ProcessingTime").doubleValue() + par("TransmissionDelay").doubleValue();
+        
+
+        Mmsg_Base *logmsg = sentMsg->dup();
+        scheduleAt(simTime() + par("ProcessingTime").doubleValue(), logmsg);
 
         if (retransmit)
         {
+        
             scheduleAt(simTime() + sentNumber, sentMsg);
             return;
         }
+        
 
         if (loss)
         {
