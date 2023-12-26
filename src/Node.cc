@@ -302,7 +302,8 @@ void Node::handleMessage(cMessage *msg)
         if (scheduled->getFrameType() == 0)
         {
             scheduled->setName("Message");
-            lengths += std::string(scheduled->getPayload()).size();
+            totalsent++;
+            lengths += std::string(scheduled->getPayload()).size()*8;
         }
 
         else if (scheduled->getFrameType() == 1)
