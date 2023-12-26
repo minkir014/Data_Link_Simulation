@@ -55,12 +55,12 @@ protected:
   std::vector<std::string> inputModifiers;
   virtual std::string framingFunc(std::string message);
   virtual std::string deframingFunc(std::string payload);
-  virtual std::string modifier(std::string payload, std::string modifierBits);
+  virtual std::string modifier(std::string payload, std::string modifierBits,int& modifiedBitNum);
   virtual char randomizer_helper(char c);
   virtual void logReadLineSender(std::string modifierCode); // 0: Sent, 1: Received
   virtual void logBeforeTrans(double timeAfterProc, std::string sentOrRecieved, int seq_num, std::string payload, std::string trailer, int modifiedBitNum, std::string lost, int dup, double delay, std::string modifierCode);
   virtual void logTimeOut(double timerOftimeout, int seq_num);
-  virtual void logControlFrame(double timeAfterProc, std::string ackOrNack, int controlFrameNum, std::string lost);                                                                  
+  virtual void logControlFrame(double timeAfterProc, std::string ackOrNack, int controlFrameNum);
   virtual void readFromFile(int nodeIndex);
   virtual std::bitset<8> generateCheckSum(std::string message);
   virtual bool between(int a, int b, int c); // a: frame_expected, b: frame, c: too_far

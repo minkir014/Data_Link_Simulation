@@ -35,6 +35,7 @@ typedef  std::bitset<8> bits;
  *     bits checksum;
  *     int dupCount;
  *     int modifiedBitNumber;
+ *     bool inputModifiers[4];
  * }
  * </pre>
  *
@@ -72,6 +73,7 @@ class Mmsg_Base : public ::omnetpp::cPacket
     bits checksum;
     int dupCount = 0;
     int modifiedBitNumber = 0;
+    bool inputModifiers[4];
 
   private:
     void copy(const Mmsg_Base& other);
@@ -111,6 +113,10 @@ class Mmsg_Base : public ::omnetpp::cPacket
 
     virtual int getModifiedBitNumber() const;
     virtual void setModifiedBitNumber(int modifiedBitNumber);
+
+    virtual size_t getInputModifiersArraySize() const;
+    virtual bool getInputModifiers(size_t k) const;
+    virtual void setInputModifiers(size_t k, bool inputModifiers);
 };
 
 

@@ -64,7 +64,7 @@ char Node::randomizer_helper(char c)
     return cnew;
 }
 
-std::string Node::modifier(std::string payload, std::string modifierBits)
+std::string Node::modifier(std::string payload, std::string modifierBits, int &modifiedBitNum)
 {
     loss = false;
     modified = false;
@@ -133,6 +133,7 @@ std::string Node::modifier(std::string payload, std::string modifierBits)
         index = rand() % payload.size(); // to be reviewed
         cnew = randomizer_helper(payload[index]);
         payload[index] = cnew;
+        modifiedBitNum=index;
         modified = true;
         return (payload);
         break;
@@ -142,6 +143,7 @@ std::string Node::modifier(std::string payload, std::string modifierBits)
         index = rand() % payload.size();
         cnew = randomizer_helper(payload[index]);
         payload[index] = cnew;
+        modifiedBitNum=index;
         delay = true;
         modified = true;
         return (payload);
@@ -151,6 +153,7 @@ std::string Node::modifier(std::string payload, std::string modifierBits)
         modifiedcount++;
         index = rand() % payload.size();
         cnew = randomizer_helper(payload[index]);
+        modifiedBitNum=index;
         payload[index] = cnew;
         duplicate = true;
         modified = true;
@@ -161,6 +164,7 @@ std::string Node::modifier(std::string payload, std::string modifierBits)
         modifiedcount++;
         index = rand() % payload.size();
         cnew = randomizer_helper(payload[index]);
+        modifiedBitNum=index;
         payload[index] = cnew;
         delay = true;
         duplicate = true;
@@ -273,7 +277,7 @@ void Node::logTimeOut(double timerOftimeout, int seq_num)
     outputFile.close();
 }
 
-void Node::logControlFrame(double timeAfterProc, std::string ackOrNack, int controlFrameNum, std::string lost)
+void Node::logControlFrame(double timeAfterProc, std::string ackOrNack, int controlFrameNum)
 {
     std::ofstream outputFile;
     outputFile.open("output.txt", std::ios_base::app);
@@ -292,6 +296,7 @@ void Node::initialize()
 
 void Node::handleMessage(cMessage *msg)
 {
+    int bitToBeModified=0;
     bool sender = false;
     bool retransmit = false;
     // TODO - Generated method body
@@ -342,16 +347,21 @@ void Node::handleMessage(cMessage *msg)
     }
     else if (strcmp(msg->getName(), "Message") == 0)
     {
+        Mmsg_Base *log = new Mmsg_Base("");
         Mmsg_Base *received = check_and_cast<Mmsg_Base *>(msg);
         simtime_t delayNum = par("ProcessingTime").doubleValue() + par("TransmissionDelay").doubleValue();
         std::string deframedPayload = deframingFunc(received->getPayload());
         std::bitset<8> checksum = generateCheckSum(deframedPayload);
         std::cout << "Payload: " << received->getPayload() << endl;
 
+
         if (received->getSN() == frameExpected)
         {
             if (checksum.to_ulong() == received->getChecksum().to_ulong())
             {
+                log->setAckNum(received->getSN()+1);
+                log->setName("ACK_Log");
+
                 frameExpected++;
                 frameExpected %= MAX_SEQ;
                 too_far++;
@@ -383,6 +393,8 @@ void Node::handleMessage(cMessage *msg)
 
         if (!no_nak)
         {
+            log->setAckNum(received->getSN());
+            log->setName("NACK_Log");
             received->setName("To Send");
             std::cout << "I sent some nack at " << simTime().dbl() << endl;
             received->setAckNum(frameExpected);
@@ -390,6 +402,7 @@ void Node::handleMessage(cMessage *msg)
             no_nak = true;
             scheduleAt(simTime() + delayNum, received);
         }
+        scheduleAt(simTime()+par("ProcessingTime").doubleValue(), log);
     }
     else if (strcmp(msg->getName(), "TimeOut") == 0)
     {
@@ -398,12 +411,16 @@ void Node::handleMessage(cMessage *msg)
         msg = controlFrame;
         retransmit = true;
         sender = true;
+        logTimeOut(simTime().dbl(),controlFrame->getSN());
     }
     else
     {
+
         Mmsg_Base *controlFrame = check_and_cast<Mmsg_Base *>(msg);
+
         if (controlFrame->getFrameType() == 1)
         {
+            logControlFrame(simTime().dbl(),"ACK", controlFrame->getAckNum());
             while (between(ackExpected, controlFrame->getAckNum() - 1, next_frame_to_send))
             {
                 cancelEvent(msgPointers[ackExpected % par("WindowSender").intValue()]);
@@ -417,6 +434,7 @@ void Node::handleMessage(cMessage *msg)
         else if (controlFrame->getFrameType() == 2 && ackExpected != inputMessages.size())
         // NACKs never get out of range. Check.
         {
+            logControlFrame(simTime().dbl(),"NACK", controlFrame->getAckNum());
             retransmit = true;
             sender = true;
         }
@@ -439,15 +457,25 @@ void Node::handleMessage(cMessage *msg)
 
             tempInt = counter;
             modifiedPayload = modifier(inputMessages[tempInt],
-                                       inputModifiers[tempInt]);
+                                       inputModifiers[tempInt], bitToBeModified);
             logReadLineSender(inputModifiers[tempInt]);
         }
+
+
         std::string stuffedPayload = framingFunc(modifiedPayload);
         Mmsg_Base *sentMsg = new Mmsg_Base("To Send");
         sentMsg->setPayload(stuffedPayload.c_str());
         sentMsg->setSN(tempInt % MAX_SEQ);
         sentMsg->setFrameType(0);
         sentMsg->setChecksum(generateCheckSum(inputMessages[tempInt]));
+        sentMsg->setInputModifiers(0,modified);
+        sentMsg->setInputModifiers(1,loss);
+        sentMsg->setInputModifiers(2,duplicate);
+        sentMsg->setInputModifiers(3, delay);
+        sentMsg->setDupCount(1);
+        sentMsg->setModifiedBitNumber(bitToBeModified);
+
+
 
         double sentNumber = par("ProcessingTime").doubleValue() + par("TransmissionDelay").doubleValue();
         
@@ -480,7 +508,11 @@ void Node::handleMessage(cMessage *msg)
 
             if (duplicate)
             {
+                Mmsg_Base *duplogmsg = sentMsg->dup();
+                duplogmsg->setDupCount(2);
+
                 double duplicateNumber = par("DuplicationDelay").doubleValue();
+                scheduleAt(simTime() + par("ProcessingTime").doubleValue()+ duplicateNumber, duplogmsg);
                 sentNumber = sentNumber + duplicateNumber;
                 std::cout << "Duplicated\n"
                           << simTime() + sentNumber;

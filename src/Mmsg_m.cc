@@ -437,6 +437,7 @@ void bitsDescriptor::setFieldStructValuePointer(omnetpp::any_ptr object, int fie
 
 Mmsg_Base::Mmsg_Base(const char *name, short kind) : ::omnetpp::cPacket(name, kind)
 {
+    std::fill(this->inputModifiers, this->inputModifiers + 4, false);
 }
 
 Mmsg_Base::Mmsg_Base(const Mmsg_Base& other) : ::omnetpp::cPacket(other)
@@ -465,6 +466,9 @@ void Mmsg_Base::copy(const Mmsg_Base& other)
     this->checksum = other.checksum;
     this->dupCount = other.dupCount;
     this->modifiedBitNumber = other.modifiedBitNumber;
+    for (size_t i = 0; i < 4; i++) {
+        this->inputModifiers[i] = other.inputModifiers[i];
+    }
 }
 
 void Mmsg_Base::parsimPack(omnetpp::cCommBuffer *b) const
@@ -477,6 +481,7 @@ void Mmsg_Base::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->checksum);
     doParsimPacking(b,this->dupCount);
     doParsimPacking(b,this->modifiedBitNumber);
+    doParsimArrayPacking(b,this->inputModifiers,4);
 }
 
 void Mmsg_Base::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -489,6 +494,7 @@ void Mmsg_Base::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->checksum);
     doParsimUnpacking(b,this->dupCount);
     doParsimUnpacking(b,this->modifiedBitNumber);
+    doParsimArrayUnpacking(b,this->inputModifiers,4);
 }
 
 int Mmsg_Base::getSN() const
@@ -561,6 +567,23 @@ void Mmsg_Base::setModifiedBitNumber(int modifiedBitNumber)
     this->modifiedBitNumber = modifiedBitNumber;
 }
 
+size_t Mmsg_Base::getInputModifiersArraySize() const
+{
+    return 4;
+}
+
+bool Mmsg_Base::getInputModifiers(size_t k) const
+{
+    if (k >= 4) throw omnetpp::cRuntimeError("Array of size %lu indexed by %lu", (unsigned long)4, (unsigned long)k);
+    return this->inputModifiers[k];
+}
+
+void Mmsg_Base::setInputModifiers(size_t k, bool inputModifiers)
+{
+    if (k >= 4) throw omnetpp::cRuntimeError("Array of size %lu indexed by %lu", (unsigned long)4, (unsigned long)k);
+    this->inputModifiers[k] = inputModifiers;
+}
+
 class MmsgDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -573,6 +596,7 @@ class MmsgDescriptor : public omnetpp::cClassDescriptor
         FIELD_checksum,
         FIELD_dupCount,
         FIELD_modifiedBitNumber,
+        FIELD_inputModifiers,
     };
   public:
     MmsgDescriptor();
@@ -640,7 +664,7 @@ const char *MmsgDescriptor::getProperty(const char *propertyName) const
 int MmsgDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 7+base->getFieldCount() : 7;
+    return base ? 8+base->getFieldCount() : 8;
 }
 
 unsigned int MmsgDescriptor::getFieldTypeFlags(int field) const
@@ -659,8 +683,9 @@ unsigned int MmsgDescriptor::getFieldTypeFlags(int field) const
         FD_ISCOMPOUND,    // FIELD_checksum
         FD_ISEDITABLE,    // FIELD_dupCount
         FD_ISEDITABLE,    // FIELD_modifiedBitNumber
+        FD_ISARRAY | FD_ISEDITABLE,    // FIELD_inputModifiers
     };
-    return (field >= 0 && field < 7) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 8) ? fieldTypeFlags[field] : 0;
 }
 
 const char *MmsgDescriptor::getFieldName(int field) const
@@ -679,8 +704,9 @@ const char *MmsgDescriptor::getFieldName(int field) const
         "checksum",
         "dupCount",
         "modifiedBitNumber",
+        "inputModifiers",
     };
-    return (field >= 0 && field < 7) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 8) ? fieldNames[field] : nullptr;
 }
 
 int MmsgDescriptor::findField(const char *fieldName) const
@@ -694,6 +720,7 @@ int MmsgDescriptor::findField(const char *fieldName) const
     if (strcmp(fieldName, "checksum") == 0) return baseIndex + 4;
     if (strcmp(fieldName, "dupCount") == 0) return baseIndex + 5;
     if (strcmp(fieldName, "modifiedBitNumber") == 0) return baseIndex + 6;
+    if (strcmp(fieldName, "inputModifiers") == 0) return baseIndex + 7;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -713,8 +740,9 @@ const char *MmsgDescriptor::getFieldTypeString(int field) const
         "bits",    // FIELD_checksum
         "int",    // FIELD_dupCount
         "int",    // FIELD_modifiedBitNumber
+        "bool",    // FIELD_inputModifiers
     };
-    return (field >= 0 && field < 7) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 8) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **MmsgDescriptor::getFieldPropertyNames(int field) const
@@ -753,6 +781,7 @@ int MmsgDescriptor::getFieldArraySize(omnetpp::any_ptr object, int field) const
     }
     Mmsg_Base *pp = omnetpp::fromAnyPtr<Mmsg_Base>(object); (void)pp;
     switch (field) {
+        case FIELD_inputModifiers: return 4;
         default: return 0;
     }
 }
@@ -804,6 +833,7 @@ std::string MmsgDescriptor::getFieldValueAsString(omnetpp::any_ptr object, int f
         case FIELD_checksum: return "";
         case FIELD_dupCount: return long2string(pp->getDupCount());
         case FIELD_modifiedBitNumber: return long2string(pp->getModifiedBitNumber());
+        case FIELD_inputModifiers: return bool2string(pp->getInputModifiers(i));
         default: return "";
     }
 }
@@ -826,6 +856,7 @@ void MmsgDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int field, i
         case FIELD_payload: pp->setPayload((value)); break;
         case FIELD_dupCount: pp->setDupCount(string2long(value)); break;
         case FIELD_modifiedBitNumber: pp->setModifiedBitNumber(string2long(value)); break;
+        case FIELD_inputModifiers: pp->setInputModifiers(i,string2bool(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'Mmsg_Base'", field);
     }
 }
@@ -847,6 +878,7 @@ omnetpp::cValue MmsgDescriptor::getFieldValue(omnetpp::any_ptr object, int field
         case FIELD_checksum: return omnetpp::toAnyPtr(&pp->getChecksum()); break;
         case FIELD_dupCount: return pp->getDupCount();
         case FIELD_modifiedBitNumber: return pp->getModifiedBitNumber();
+        case FIELD_inputModifiers: return pp->getInputModifiers(i);
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'Mmsg_Base' as cValue -- field index out of range?", field);
     }
 }
@@ -869,6 +901,7 @@ void MmsgDescriptor::setFieldValue(omnetpp::any_ptr object, int field, int i, co
         case FIELD_payload: pp->setPayload(value.stringValue()); break;
         case FIELD_dupCount: pp->setDupCount(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_modifiedBitNumber: pp->setModifiedBitNumber(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_inputModifiers: pp->setInputModifiers(i,value.boolValue()); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'Mmsg_Base'", field);
     }
 }

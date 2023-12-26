@@ -31,4 +31,5 @@ packet Mmsg {
     bits checksum;
     int dupCount;
     int modifiedBitNumber;
+    bool inputModifiers[4];
 }
