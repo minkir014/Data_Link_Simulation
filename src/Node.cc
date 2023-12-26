@@ -297,9 +297,14 @@ void Node::handleMessage(cMessage *msg)
     }
     else if (strcmp(msg->getName(), "To Send") == 0)
     {
+
         Mmsg_Base *scheduled = check_and_cast<Mmsg_Base *>(msg);
         if (scheduled->getFrameType() == 0)
+        {
             scheduled->setName("Message");
+            lengths += scheduled->getPayload().length();
+        }
+
         else if (scheduled->getFrameType() == 1)
         {
             std::string idk = "Ack " + std::to_string(scheduled->getAckNum());
@@ -310,6 +315,7 @@ void Node::handleMessage(cMessage *msg)
             std::string idk = "Nack " + std::to_string(scheduled->getAckNum());
             scheduled->setName(idk.c_str());
         }
+
         send(scheduled, "out");
     }
     else if (strcmp(msg->getName(), "Message") == 0)
@@ -376,8 +382,10 @@ void Node::handleMessage(cMessage *msg)
         Mmsg_Base *controlFrame = check_and_cast<Mmsg_Base *>(msg);
         if (controlFrame->getFrameType() == 1)
         {
+
             while (between(ackExpected, controlFrame->getAckNum() - 1, next_frame_to_send))
             {
+                time_to_send += simTime().dbl();
                 cancelEvent(msgPointers[ackExpected % par("WindowSender").intValue()]);
                 ackExpected++;
                 ackExpected %= MAX_SEQ;
@@ -459,6 +467,8 @@ void Node::handleMessage(cMessage *msg)
         simtime_t timeOutNumber = par("Timeout").intValue();
         scheduleAt(simTime() + timeOutNumber, sentTimer);
 
+        time_to_send -= simTime().dbl();
+    
         next_frame_to_send++;
         next_frame_to_send %= MAX_SEQ;
         counter++;

@@ -39,6 +39,10 @@ protected:
 
   int lostcount = 0;
   int modifiedcount = 0;
+  int usefulcount = 0;
+  int totalsent = 0;
+  int lengths = 0;
+  double time_to_send = 0;
   bool duplicate = false;
   bool modified = false;
   bool loss = false;
