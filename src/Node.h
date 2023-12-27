@@ -32,6 +32,10 @@ using namespace omnetpp;
 class Node : public cSimpleModule
 {
 protected:
+  int totalsent = 0;
+  int lengths = 0;
+  double time_to_send = 0;
+
   int senderOrReceiver = 0; // 0: Receiver, 1: Sender
   int ackExpected = 0; int next_frame_to_send = 0;
   int frameExpected = 0; int too_far = 0;
@@ -65,6 +69,7 @@ protected:
   virtual void logControlFrame(double timeAfterProc, std::string sentOrReceived, std::string ackOrNack, int controlFrameNum);
   virtual void readFromFile(int nodeIndex);
   virtual std::bitset<8> generateCheckSum(std::string message);
+  virtual void finish();
   virtual bool between(int a, int b, int c); // a: frame_expected, b: frame, c: too_far
 };
 

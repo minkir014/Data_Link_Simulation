@@ -347,8 +347,11 @@ void Node::handleMessage(cMessage *msg)
     else if (strcmp(msg->getName(), "To Send") == 0)
     {
         Mmsg_Base *scheduled = check_and_cast<Mmsg_Base *>(msg);
-        if (scheduled->getFrameType() == 0)
+        if (scheduled->getFrameType() == 0) {
             scheduled->setName("Message");
+            totalsent += 1;
+            lengths += std::string(scheduled->getPayload()).size() * 8;
+        }
         else if (scheduled->getFrameType() == 1)
         {
             std::string idk = "Ack " + std::to_string(scheduled->getAckNum());
@@ -478,6 +481,7 @@ void Node::handleMessage(cMessage *msg)
             logControlFrame(simTime().dbl(), "received", "ACK", controlFrame->getAckNum());
             while (between(ackExpected, controlFrame->getAckNum() - 1, next_frame_to_send))
             {
+                time_to_send += simTime().dbl();
                 cancelEvent(msgPointers[ackExpected % par("WindowSender").intValue()]);
                 delete msgPointers[ackExpected % par("WindowSender").intValue()];
                 ackExpected++;
@@ -589,6 +593,7 @@ void Node::handleMessage(cMessage *msg)
         simtime_t timeOutNumber = par("Timeout").intValue();
         scheduleAt(simTime() + timeOutNumber, sentTimer);
 
+        time_to_send -= simTime().dbl();
         next_frame_to_send++;
         next_frame_to_send %= MAX_SEQ;
         counter++;
@@ -601,5 +606,18 @@ void Node::handleMessage(cMessage *msg)
             scheduleAt(simTime() + processingTime,
                        Processing);
         }
+    }
+}
+
+void Node::finish()
+{
+    if(totalsent != 0)
+    {
+        std::cout << "All messages have been successfully processed." << endl;
+        std::cout << "Loss Rate = " << (lostcount*1.000) / totalsent << endl;
+        std::cout << "Modifications Rate = " << (modifiedcount*1.000) / totalsent << endl;
+        std::cout << "Channel Efficiency = " << 1 - (double)inputMessages.size() / totalsent << endl;
+        std::cout << "Average BW = " << (lengths*1.000) / totalsent << endl;
+        std::cout << "Average time taken to send message = " << time_to_send/totalsent << endl;
     }
 }
