@@ -1,0 +1,131 @@
+At time 5, Node1, Introducing channel error with code = 0000.
+At time [5.5], Node[1] sent frame with seq_num = [0], and payload = [#Osama#], and trailer = [01010001], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time 5.5, Node1, Introducing channel error with code = 0010.
+At time [6], Node[1] sent frame with seq_num = [1], and payload = [#Heggi#], and trailer = [01000100], Modified[-1], Lost[No], Duplicate[1], Delay = [0].
+At time 6, Node1, Introducing channel error with code = 1010.
+At time [6.1], Node[1] sent frame with seq_num = [1], and payload = [#Heggi#], and trailer = [01000100], Modified[-1], Lost[No], Duplicate[2], Delay = [0].
+At time [6.5], Node[1] sent frame with seq_num = [2], and payload = [#Minq#], and trailer = [00101011], Modified[27], Lost[No], Duplicate[1], Delay = [0].
+At time [6.5], Node[0] received frame with seq_num = [0], and payload = [Osama], and trailer = [01010001], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [6.6], Node[1] sent frame with seq_num = [2], and payload = [#Minq#], and trailer = [00101011], Modified[27], Lost[No], Duplicate[2], Delay = [0].
+At time [7], Node[0],sent [ACK], with number[1], Loss[No].
+At time [7], Node[0] received frame with seq_num = [1], and payload = [Heggi], and trailer = [01000100], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [7.1], Node[0] received frame with seq_num = [1], and payload = [Heggi], and trailer = [01000100], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [7.5], Node[0],sent [ACK], with number[2], Loss[No].
+At time [7.5], Node[0] received frame with seq_num = [2], and payload = [Minq], and trailer = [00101011], Modified[1], Lost[No], Duplicate[0], Delay = [0].
+At time [7.6], Node[0] received frame with seq_num = [2], and payload = [Minq], and trailer = [00101011], Modified[1], Lost[No], Duplicate[0], Delay = [0].
+At time [8], Node[0],sent [NACK], with number[2], Loss[No].
+At time [8], Node[1],received [ACK], with number[1], Loss[No].
+At time 8, Node1, Introducing channel error with code = 1000.
+At time [8.5], Node[1] sent frame with seq_num = [3], and payload = [#Maleo#], and trailer = [01001110], Modified[37], Lost[No], Duplicate[0], Delay = [0].
+At time [8.5], Node[1],received [ACK], with number[2], Loss[No].
+At time 8.5, Node1, Introducing channel error with code = 0110.
+At time [9], Node[1] sent frame with seq_num = [4], and payload = [#Mohamed#], and trailer = [01000111], Modified[-1], Lost[Yes], Duplicate[1], Delay = [0].
+At time [9], Node[1],received [NACK], with number[2], Loss[No].
+At time 9, Node1, Introducing channel error with code = 0000.
+At time [9.5], Node[1] sent frame with seq_num = [2], and payload = [#Mina#], and trailer = [00101011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [9.5], Node[0] received frame with seq_num = [3], and payload = [Maleo], and trailer = [01001110], Modified[1], Lost[No], Duplicate[0], Delay = [0].
+At time [10.5], Node[0] received frame with seq_num = [2], and payload = [Mina], and trailer = [00101011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [11], Node[0],sent [ACK], with number[3], Loss[No].
+At time [12], Node[1],received [ACK], with number[3], Loss[No].
+At time 12, Node1, Introducing channel error with code = 0101.
+At time [12.5], Node[1] sent frame with seq_num = [5], and payload = [#Fares#], and trailer = [01000011], Modified[-1], Lost[Yes], Duplicate[0], Delay = [4].
+Timeout event at time [18], at Node[1], for frame with seq_num = 3.
+At time 18, Node1, Introducing channel error with code = 0000.
+Timeout event at time [18.5], at Node[1], for frame with seq_num = 4.
+At time 18.5, Node1, Introducing channel error with code = 0000.
+At time [18.5], Node[1] sent frame with seq_num = [3], and payload = [#Malek#], and trailer = [01001110], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [19], Node[1] sent frame with seq_num = [4], and payload = [#Mohamed#], and trailer = [01000111], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [19.5], Node[0] received frame with seq_num = [3], and payload = [Malek], and trailer = [01001110], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [20], Node[0],sent [ACK], with number[4], Loss[No].
+At time [20], Node[0] received frame with seq_num = [4], and payload = [Mohamed], and trailer = [01000111], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [20.5], Node[0],sent [ACK], with number[5], Loss[No].
+At time [21], Node[1],received [ACK], with number[4], Loss[No].
+At time 21, Node1, Introducing channel error with code = 1011.
+At time [21.5], Node[1] sent frame with seq_num = [0], and payload = [#CKE#], and trailer = [01000101], Modified[12], Lost[No], Duplicate[1], Delay = [4].
+At time [21.5], Node[1],received [ACK], with number[5], Loss[No].
+At time 21.5, Node1, Introducing channel error with code = 0111.
+At time [21.6], Node[1] sent frame with seq_num = [0], and payload = [#CKE#], and trailer = [01000101], Modified[12], Lost[No], Duplicate[2], Delay = [4].
+Timeout event at time [22], at Node[1], for frame with seq_num = 5.
+At time 22, Node1, Introducing channel error with code = 0000.
+At time [22], Node[1] sent frame with seq_num = [1], and payload = [#CUFE#], and trailer = [00010101], Modified[-1], Lost[Yes], Duplicate[1], Delay = [4].
+At time [22.5], Node[1] sent frame with seq_num = [5], and payload = [#Fares#], and trailer = [01000011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [23.5], Node[0] received frame with seq_num = [5], and payload = [Fares], and trailer = [01000011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [24], Node[0],sent [ACK], with number[6], Loss[No].
+At time [25], Node[1],received [ACK], with number[0], Loss[No].
+At time 25, Node1, Introducing channel error with code = 0100.
+At time [25.5], Node[1] sent frame with seq_num = [2], and payload = [#Malek#], and trailer = [01001110], Modified[-1], Lost[Yes], Duplicate[0], Delay = [0].
+At time [26.5], Node[0] received frame with seq_num = [0], and payload = [CKE], and trailer = [01000101], Modified[1], Lost[No], Duplicate[0], Delay = [0].
+At time [26.6], Node[0] received frame with seq_num = [0], and payload = [CKE], and trailer = [01000101], Modified[1], Lost[No], Duplicate[0], Delay = [0].
+At time [27], Node[0],sent [NACK], with number[0], Loss[No].
+At time [28], Node[1],received [NACK], with number[0], Loss[No].
+At time 28, Node1, Introducing channel error with code = 0000.
+At time [28.5], Node[1] sent frame with seq_num = [0], and payload = [#CCE#], and trailer = [01000101], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [29.5], Node[0] received frame with seq_num = [0], and payload = [CCE], and trailer = [01000101], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [30], Node[0],sent [ACK], with number[1], Loss[No].
+Timeout event at time [31], at Node[1], for frame with seq_num = 0.
+At time 31, Node1, Introducing channel error with code = 0000.
+At time [31], Node[1],received [ACK], with number[1], Loss[No].
+At time 31, Node1, Introducing channel error with code = 1100.
+Timeout event at time [31.5], at Node[1], for frame with seq_num = 1.
+At time 31.5, Node1, Introducing channel error with code = 0000.
+At time [31.5], Node[1] sent frame with seq_num = [0], and payload = [#CCE#], and trailer = [01000101], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [31.5], Node[1] sent frame with seq_num = [3], and payload = [#Good Morning#], and trailer = [01011101], Modified[-1], Lost[Yes], Duplicate[0], Delay = [0].
+At time [32], Node[1] sent frame with seq_num = [1], and payload = [#CUFE#], and trailer = [00010101], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [32.5], Node[0] received frame with seq_num = [0], and payload = [CCE], and trailer = [01000101], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [33], Node[0] received frame with seq_num = [1], and payload = [CUFE], and trailer = [00010101], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [33.5], Node[0],sent [ACK], with number[2], Loss[No].
+At time [34.5], Node[1],received [ACK], with number[2], Loss[No].
+At time 34.5, Node1, Introducing channel error with code = 0000.
+Timeout event at time [35], at Node[1], for frame with seq_num = 2.
+At time 35, Node1, Introducing channel error with code = 0000.
+At time [35], Node[1] sent frame with seq_num = [4], and payload = [#Gooood#], and trailer = [00100011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [35.5], Node[1] sent frame with seq_num = [2], and payload = [#Malek#], and trailer = [01001110], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [36], Node[0] received frame with seq_num = [4], and payload = [Gooood], and trailer = [00100011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [36.5], Node[0],sent [NACK], with number[4], Loss[No].
+At time [36.5], Node[0] received frame with seq_num = [2], and payload = [Malek], and trailer = [01001110], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [37], Node[0],sent [ACK], with number[3], Loss[No].
+At time [37.5], Node[1],received [NACK], with number[2], Loss[No].
+At time 37.5, Node1, Introducing channel error with code = 0000.
+At time [38], Node[1] sent frame with seq_num = [2], and payload = [#Malek#], and trailer = [01001110], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [38], Node[1],received [ACK], with number[3], Loss[No].
+At time 38, Node1, Introducing channel error with code = 0011.
+At time [38.5], Node[1] sent frame with seq_num = [5], and payload = [#Fares#], and trailer = [01000011], Modified[-1], Lost[No], Duplicate[1], Delay = [4].
+At time [38.6], Node[1] sent frame with seq_num = [5], and payload = [#Fares#], and trailer = [01000011], Modified[-1], Lost[No], Duplicate[2], Delay = [4].
+At time [39], Node[0] received frame with seq_num = [2], and payload = [Malek], and trailer = [01001110], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+Timeout event at time [41], at Node[1], for frame with seq_num = 3.
+At time 41, Node1, Introducing channel error with code = 0000.
+At time [41.5], Node[1] sent frame with seq_num = [3], and payload = [#Good Morning#], and trailer = [01011101], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [42.5], Node[0] received frame with seq_num = [3], and payload = [Good Morning], and trailer = [01011101], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [43], Node[0],sent [ACK], with number[4], Loss[No].
+At time [43.5], Node[0] received frame with seq_num = [5], and payload = [Fares], and trailer = [01000011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [43.6], Node[0] received frame with seq_num = [5], and payload = [Fares], and trailer = [01000011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [44], Node[0],sent [ACK], with number[6], Loss[No].
+At time [44], Node[1],received [ACK], with number[5], Loss[No].
+At time 44, Node1, Introducing channel error with code = 1011.
+At time [44.5], Node[1] sent frame with seq_num = [0], and payload = [#Aniaaa#], and trailer = [00101111], Modified[20], Lost[No], Duplicate[1], Delay = [4].
+At time 44.5, Node1, Introducing channel error with code = 1111.
+At time [44.6], Node[1] sent frame with seq_num = [0], and payload = [#Aniaaa#], and trailer = [00101111], Modified[20], Lost[No], Duplicate[2], Delay = [4].
+At time [45], Node[1] sent frame with seq_num = [1], and payload = [#Osama#], and trailer = [01010001], Modified[-1], Lost[Yes], Duplicate[1], Delay = [4].
+At time [45], Node[1],received [ACK], with number[0], Loss[No].
+At time 45, Node1, Introducing channel error with code = 0000.
+At time [45.5], Node[1] sent frame with seq_num = [2], and payload = [#Mina#], and trailer = [00101011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [46.5], Node[0] received frame with seq_num = [2], and payload = [Mina], and trailer = [00101011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [47], Node[0],sent [NACK], with number[2], Loss[No].
+At time [48], Node[1],received [NACK], with number[0], Loss[No].
+At time 48, Node1, Introducing channel error with code = 0000.
+At time [48.5], Node[1] sent frame with seq_num = [0], and payload = [#Anaaaa#], and trailer = [00101111], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [49.5], Node[0] received frame with seq_num = [0], and payload = [Aniaaa], and trailer = [00101111], Modified[1], Lost[No], Duplicate[0], Delay = [0].
+At time [49.5], Node[0] received frame with seq_num = [0], and payload = [Anaaaa], and trailer = [00101111], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [49.6], Node[0] received frame with seq_num = [0], and payload = [Aniaaa], and trailer = [00101111], Modified[1], Lost[No], Duplicate[0], Delay = [0].
+At time [50], Node[0],sent [ACK], with number[1], Loss[No].
+At time [51], Node[1],received [ACK], with number[1], Loss[No].
+Timeout event at time [54.5], at Node[1], for frame with seq_num = 1.
+At time 54.5, Node1, Introducing channel error with code = 0000.
+Timeout event at time [55], at Node[1], for frame with seq_num = 2.
+At time 55, Node1, Introducing channel error with code = 0000.
+At time [55], Node[1] sent frame with seq_num = [1], and payload = [#Osama#], and trailer = [01010001], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [55.5], Node[1] sent frame with seq_num = [2], and payload = [#Mina#], and trailer = [00101011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [56], Node[0] received frame with seq_num = [1], and payload = [Osama], and trailer = [01010001], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [56.5], Node[0],sent [ACK], with number[2], Loss[No].
+At time [56.5], Node[0] received frame with seq_num = [2], and payload = [Mina], and trailer = [00101011], Modified[-1], Lost[No], Duplicate[0], Delay = [0].
+At time [57.5], Node[1],received [ACK], with number[3], Loss[No].
